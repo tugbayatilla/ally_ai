@@ -83,7 +83,12 @@ class Settings(dict):
 
     def _hide_keys(self) -> dict:
         temp = super().copy()
-        pairs = [(key, value) for key, value in temp.items() if "key" in key]
+        special_words = ["password", "key", "token"]
+        pairs = [
+            (key, value)
+            for key, value in temp.items()
+            if any(word in key for word in special_words)
+        ]
         for key, value in pairs:
             value_str = str(value)
             if len(value_str) < 7:

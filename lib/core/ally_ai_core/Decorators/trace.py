@@ -29,28 +29,28 @@ class Tracer:
     def trace(
         self,
         message: str,
-        override_show_in: Optional[bool] = None,
-        override_show_out: Optional[bool] = None,
-        override_show_data: Optional[bool] = None,
-        override_logger: Optional[logging.Logger] = None,
+        show_in: Optional[bool] = None,
+        show_out: Optional[bool] = None,
+        show_data: Optional[bool] = None,
+        logger: Optional[logging.Logger] = None,
     ) -> Callable[[F], F]:
         """
         Decorator to log the start and finish of a function execution.
 
         Args:
             message (str): Custom message to include in logs.
-            override_show_in (bool): Overrides whether to log the start of the function.
-            override_show_out (bool): Overrides whether to log the finish of the function.
-            override_show_data (bool): Overrides whether to log the args and kwargs of the function.
-            override_logger: (Logger):
+            show_in (bool): Overrides whether to log the start of the function.
+            show_out (bool): Overrides whether to log the finish of the function.
+            show_data (bool): Overrides whether to log the args and kwargs of the function.
+            logger: (Logger):
         Returns:
             Callable: The decorated function with logging.
         """
 
-        show_in = override_show_in if override_show_in else self.show_in
-        show_out = override_show_out if override_show_out else self.show_out
-        show_data = override_show_data if override_show_data else self.show_data
-        logger = override_logger if override_logger else self.logger
+        show_in = show_in if show_in else self.show_in
+        show_out = show_out if show_out else self.show_out
+        show_data = show_data if show_data else self.show_data
+        logger = logger if logger else self.logger
 
         def decorator(func: F) -> F:
             if inspect.iscoroutinefunction(func):
