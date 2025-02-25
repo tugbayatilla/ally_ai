@@ -3,7 +3,7 @@ import logging
 import re
 import asyncio
 
-from ally_ai_core.decorators import timed
+from lib.core.ally_ai_core.decorators import timed
 
 # Configure a logger for testing if needed
 logger = logging.getLogger(__name__)
