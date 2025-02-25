@@ -12,16 +12,15 @@ class Settings(dict):
     Represents app settings yaml file
     """
 
-    def __init__(
-        self,
-        section: Literal["llm", "embeddings", "vectordb"],
-        path="./app-settings.yaml",
-        **kwargs,
-    ):
+    def __init__(self,
+                 section: str,
+                 path="./app-settings.yaml",
+                 **kwargs):
         """
         Reads given yaml file
         - Use kwargs to override values
         """
+        super().__init__()
         self.path = path
         self.section = section
 
@@ -83,7 +82,7 @@ class Settings(dict):
 
     def _hide_keys(self) -> dict:
         temp = super().copy()
-        special_words = ["password", "key", "token"]
+        special_words = ["password", "key", "token", "secret"]
         pairs = [
             (key, value)
             for key, value in temp.items()
@@ -91,8 +90,5 @@ class Settings(dict):
         ]
         for key, value in pairs:
             value_str = str(value)
-            if len(value_str) < 7:
-                temp[key] = "*******"
-            else:
-                temp[key] = f"{value_str[:2]}*****{value_str[-2:]}"
+            temp[key] = f"{value_str[:1]}*****{value_str[-1:]}"
         return temp

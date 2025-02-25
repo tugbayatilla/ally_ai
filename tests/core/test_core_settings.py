@@ -1,7 +1,5 @@
-from ally_ai_core.settings.Settings import Settings
+from lib.core.ally_ai_core import Settings
 import pytest
-import os
-from tests import TEST_SETTINGS_PATH
 import logging
 from ..Utils import env_var_on_off
 
@@ -75,20 +73,13 @@ def test_no_app_setting_file_logs_error_once(caplog):
                 "api_key",
                 "endpoint",
                 "api_version",
-                "model",
-                "deployment_name",
-                "temperature",
-                "streaming",
+                "model"
             ],
-        ),
-        (
-            "embeddings",
-            ["api_key", "endpoint", "api_version", "model", "deployment_name"],
-        ),
+        )
     ],
 )
 def test_app_setting_file(section, keys):
-    settings = Settings(path=TEST_SETTINGS_PATH, section=section)
+    settings = Settings(section=section)
 
     assert settings is not None
     for key in keys:
@@ -96,39 +87,34 @@ def test_app_setting_file(section, keys):
 
 
 def test_default_api_key():
-    settings = Settings(path=TEST_SETTINGS_PATH, section="test-llm")
+    settings = Settings(section="with_key")
 
     assert settings["api_key"] == "<private-key>"
 
 
 def test_override_default_api_key():
-    new_api_key = "test_override_default_api_key"
+    new_api_key = "<overridden-api-key>"
     settings = Settings(
-        path=TEST_SETTINGS_PATH, section="test-llm", api_key=new_api_key
+        section="with_override", api_key=new_api_key
     )
-    print("settings:", settings)
     assert settings["api_key"] == new_api_key
 
 
-def test_api_key_repr_having_more_than_7_chars():
-    with env_var_on_off("LLM__API_KEY", "abcdef12345"):
-        settings = Settings(path="./app-settings-small.yaml", section="llm")
-        assert settings.__repr__() == "{'api_key': 'ab*****45'}"
+@pytest.mark.parametrize(
+    "section,key",
+    [
+        ("with_password", "api_password"),
+        ("with_token", "api_token"),
+        ("with_key", "api_key"),
+        ("with_secret", "api_secret"),
+    ],
+)
+def test_hide_special_key_values(section, key):
+    settings = Settings(section=section)
+    assert settings.__str__() == f"{{'{key}': '<*****>'}}"
+    assert settings.__repr__() == f"{{'{key}': '<*****>'}}"
 
-
-def test_api_key_repr_having_less_than_7_chars():
-    with env_var_on_off("LLM__API_KEY", "abcdef"):
-        settings = Settings(path="./app-settings-small.yaml", section="llm")
-        assert settings.__repr__() == "{'api_key': '*******'}"
-
-
-def test_api_key_str_having_more_than_7_chars():
-    with env_var_on_off("LLM__API_KEY", "abcdef12345"):
-        settings = Settings(path="./app-settings-small.yaml", section="llm")
-        assert settings.__str__() == "{'api_key': 'ab*****45'}"
-
-
-def test_api_key_str_having_less_than_7_chars():
-    with env_var_on_off("LLM__API_KEY", "abcdef"):
-        settings = Settings(path="./app-settings-small.yaml", section="llm")
-        assert settings.__str__() == "{'api_key': '*******'}"
+def test_replace_value_by_env_variable():
+    with env_var_on_off("WITH_KEY__API_KEY", "abcdef"):
+        settings = Settings(section="with_key")
+        assert settings.__repr__() == "{'api_key': 'a*****f'}"

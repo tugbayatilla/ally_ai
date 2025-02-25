@@ -1,0 +1,20 @@
+with_key:
+  api_key: '<private-key>'
+
+with_secret:
+  api_secret: '<private-key>'
+
+with_password:
+  api_password: '<private-key>'
+
+with_token:
+  api_token: '<private-key>'
+
+with_override:
+  api_key: '<private-key>'
+
+llm:
+    api_key: '<private-key>'
+    endpoint: 'arbitrary'
+    api_version: 'arbitrary'
+    model: 'arbitrary'
